@@ -149,9 +149,9 @@ public final class MobiusController<Model, Event, Effect> {
     ///
     /// - Attention: fails via `MobiusHooks.errorHandler` if the loop is running or if the controller already is
     ///              connected
-    public func connectView<ViewConnectable: Connectable>(
-        _ connectable: ViewConnectable
-    ) where ViewConnectable.Input == Model, ViewConnectable.Output == Event {
+    public func connectView(
+        _ connectable: some Connectable<Model, Event>
+    ) {
         do {
             try state.mutate { stoppedState in
                 guard stoppedState.viewConnectable == nil else {

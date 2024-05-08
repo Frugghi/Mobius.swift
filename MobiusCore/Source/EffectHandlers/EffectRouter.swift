@@ -81,9 +81,9 @@ public struct _PartialEffectRouter<Effect, EffectParameters, Event> {
     /// Route to an `EffectHandler`.
     ///
     /// - Parameter effectHandler: the `EffectHandler` for the route in question.
-    public func to<Handler: EffectHandler>(
-        _ effectHandler: Handler
-    ) -> EffectRouter<Effect, Event> where Handler.EffectParameters == EffectParameters, Handler.Event == Event {
+    public func to(
+        _ effectHandler: some EffectHandler<EffectParameters, Event>
+    ) -> EffectRouter<Effect, Event> {
         let connectable = EffectExecutor(handleInput: effectHandler.handle)
         let route = Route<Effect, Event>(extractParameters: path, connectable: connectable, queue: queue)
         return EffectRouter(routes: routes + [route])
@@ -92,9 +92,9 @@ public struct _PartialEffectRouter<Effect, EffectParameters, Event> {
     /// Route to a Connectable.
     ///
     /// - Parameter connectable: a connectable which will be used to handle effects.
-    public func to<C: Connectable>(
-        _ connectable: C
-    ) -> EffectRouter<Effect, Event> where C.Input == EffectParameters, C.Output == Event {
+    public func to(
+        _ connectable: some Connectable<EffectParameters, Event>
+    ) -> EffectRouter<Effect, Event> {
         let connectable = ThreadSafeConnectable(connectable: connectable)
         let route = Route(extractParameters: path, connectable: connectable, queue: queue)
         return EffectRouter(routes: routes + [route])
@@ -116,11 +116,11 @@ public struct _PartialEffectRouter<Effect, EffectParameters, Event> {
 private struct Route<Input, Output> {
     let connect: (@escaping Consumer<Output>) -> ConnectedRoute<Input>
 
-    init<EffectParameters, Conn: Connectable>(
+    init<EffectParameters>(
         extractParameters: @escaping (Input) -> EffectParameters?,
-        connectable: Conn,
+        connectable: some Connectable<EffectParameters, Output>,
         queue: DispatchQueue?
-    ) where Conn.Input == EffectParameters, Conn.Output == Output {
+    ) {
         connect = { output in
             let connection = connectable.connect(output)
             return ConnectedRoute(

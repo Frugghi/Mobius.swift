@@ -20,7 +20,7 @@ import Foundation
 /// application. This is primarily meant to be used for environmental events - events that come from
 /// external signals, like change of network connectivity or a periodic timer, rather than happening
 /// because of an effect being triggered or the UI being interacted with.
-public protocol EventSource: AnyObject {
+public protocol EventSource<Event>: AnyObject {
     associatedtype Event
 
     /// Subscribes the supplied consumer to the events from this event source, until the returned

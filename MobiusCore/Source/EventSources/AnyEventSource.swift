@@ -19,7 +19,7 @@ public final class AnyEventSource<Event>: EventSource {
     private let subscribeClosure: (@escaping Consumer<Event>) -> Disposable
 
     /// Creates a type-erased `EventSource` that wraps the given instance.
-    public convenience init<Source: EventSource>(_ eventSource: Source) where Source.Event == Event {
+    public convenience init(_ eventSource: some EventSource<Event>) {
         let subscribeClosure: (@escaping Consumer<Event>) -> Disposable
 
         if let anyEventSource = eventSource as? AnyEventSource {

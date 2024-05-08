@@ -20,7 +20,7 @@
 /// call `callback.end()`.
 ///
 /// Note: `EffectHandler` should be used in conjunction with an `EffectRouter`.
-public protocol EffectHandler {
+public protocol EffectHandler<EffectParameters, Event> {
     associatedtype EffectParameters
     associatedtype Event
 
@@ -55,9 +55,9 @@ public struct AnyEffectHandler<EffectParameters, Event>: EffectHandler {
     }
 
     /// Creates a type-erased `EffectHandler` that wraps the given instance.
-    public init<Handler: EffectHandler>(
-        handler: Handler
-    ) where Handler.EffectParameters == EffectParameters, Handler.Event == Event {
+    public init(
+        handler: some EffectHandler<EffectParameters, Event>
+    ) {
         let handleClosure: (EffectParameters, EffectCallback<Event>) -> Disposable
 
         if let anyHandler = handler as? AnyEffectHandler {

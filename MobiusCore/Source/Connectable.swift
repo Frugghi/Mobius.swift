@@ -21,7 +21,7 @@ import Foundation
 ///
 /// Alternatively used in `MobiusController.connectView(_:)` to connect a view to the controller. In that case, the
 /// incoming values will be models, and the outgoing values will be events.
-public protocol Connectable {
+public protocol Connectable<Input, Output> {
     associatedtype Input
     associatedtype Output
 
@@ -44,7 +44,7 @@ public struct AnyConnectable<Input, Output>: Connectable {
     private let connectClosure: (@escaping Consumer<Output>) -> Connection<Input>
 
     /// Creates a type-erased `Connectable` that wraps the given instance.
-    public init<C: Connectable>(_ connectable: C) where C.Input == Input, C.Output == Output {
+    public init(_ connectable: some Connectable<Input, Output>) {
         if let anyConnectable = connectable as? AnyConnectable {
             self = anyConnectable
         } else {

@@ -27,8 +27,7 @@ public struct CompositeEventSourceBuilder<Event> {
     }
 
     /// Returns a new `CompositeEventSourceBuilder` with the specified event source added to it.
-    public func addEventSource<Source: EventSource>(_ source: Source)
-    -> CompositeEventSourceBuilder<Event> where Source.Event == Event {
+    public func addEventSource(_ source: some EventSource<Event>) -> CompositeEventSourceBuilder<Event> {
         let sources = eventSources + [AnyEventSource(source)]
         return CompositeEventSourceBuilder(eventSources: sources)
     }

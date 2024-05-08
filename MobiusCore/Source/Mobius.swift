@@ -67,10 +67,10 @@ public enum Mobius {
     ///   - update: the `Update` function of the loop
     ///   - effectHandler: an instance conforming to `Connectable`. Will be used to handle effects by the loop.
     /// - Returns: a `Builder` instance that you can further configure before starting the loop
-    public static func loop<Model, Event, Effect, EffectHandler: Connectable>(
+    public static func loop<Model, Event, Effect>(
         update: Update<Model, Event, Effect>,
-        effectHandler: EffectHandler
-    ) -> Builder<Model, Event, Effect> where EffectHandler.Input == Effect, EffectHandler.Output == Event {
+        effectHandler: some Connectable<Effect, Event>
+    ) -> Builder<Model, Event, Effect> {
         return Builder(
             update: update,
             effectHandler: effectHandler,
@@ -86,10 +86,10 @@ public enum Mobius {
     ///   - update: the update function of the loop
     ///   - effectHandler: an instance conforming to `Connectable`. Will be used to handle effects by the loop.
     /// - Returns: a `Builder` instance that you can further configure before starting the loop
-    public static func loop<Model, Event, Effect, EffectHandler: Connectable>(
+    public static func loop<Model, Event, Effect>(
         update: @escaping (Model, Event) -> Next<Model, Effect>,
-        effectHandler: EffectHandler
-    ) -> Builder<Model, Event, Effect> where EffectHandler.Input == Effect, EffectHandler.Output == Event {
+        effectHandler: some Connectable<Effect, Event>
+    ) -> Builder<Model, Event, Effect> {
         return self.loop(
             update: Update(update),
             effectHandler: effectHandler
@@ -108,13 +108,13 @@ public enum Mobius {
         private let logger: AnyMobiusLogger<Model, Event, Effect>
         private let eventConsumerTransformer: ConsumerTransformer<Event>
 
-        fileprivate init<EffectHandler: Connectable>(
+        fileprivate init(
             update: Update<Model, Event, Effect>,
-            effectHandler: EffectHandler,
+            effectHandler: some Connectable<Effect, Event>,
             eventSource: AnyEventSource<Event>,
             eventConsumerTransformer: @escaping ConsumerTransformer<Event>,
             logger: AnyMobiusLogger<Model, Event, Effect>
-        ) where EffectHandler.Input == Effect, EffectHandler.Output == Event {
+        ) {
             self.update = update
             self.effectHandler = AnyConnectable(effectHandler)
             self.eventSource = eventSource
@@ -136,7 +136,7 @@ public enum Mobius {
         /// - Returns: An updated Builder.
         ///
         /// [event source]: https://github.com/spotify/Mobius.swift/wiki/Event-Source
-        public func withEventSource<Source: EventSource>(_ eventSource: Source) -> Builder where Source.Event == Event {
+        public func withEventSource(_ eventSource: some EventSource<Event>) -> Builder {
             return Builder(
                 update: update,
                 effectHandler: effectHandler,

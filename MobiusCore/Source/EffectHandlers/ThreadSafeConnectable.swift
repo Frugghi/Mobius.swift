@@ -19,9 +19,7 @@ final class ThreadSafeConnectable<Event, Effect>: Connectable {
     private var output: Consumer<Event>?
     private var connection: Connection<Effect>?
 
-    init<Conn: Connectable>(
-        connectable: Conn
-    ) where Conn.Input == Effect, Conn.Output == Event {
+    init(connectable: some Connectable<Effect, Event>) {
         self.connectable = AnyConnectable(connectable)
     }
 

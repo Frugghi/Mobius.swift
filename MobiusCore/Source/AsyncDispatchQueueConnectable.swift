@@ -31,10 +31,10 @@ final class AsyncDispatchQueueConnectable<Input, Output>: Connectable {
         self.acceptQueue = acceptQueue
     }
 
-    convenience init<C: Connectable>(
-        _ underlyingConnectable: C,
+    convenience init(
+        _ underlyingConnectable: some Connectable<Input, Output>,
         acceptQueue: DispatchQueue
-    ) where C.Input == Input, C.Output == Output {
+    ) {
         self.init(AnyConnectable(underlyingConnectable), acceptQueue: acceptQueue)
     }
 
